@@ -10,7 +10,7 @@ class Blockchain(BMDBlockchainInterface):
         self.bmd_current_transactions = []
         self.bmd_chain = []
 
-        self.bmd_new_block(proof=20040203, previous_hash="Bondarevskyi")
+        self.bmd_new_block(proof=20040203, previous_hash="MAIN")
 
     def bmd_proof_of_work(self, last_proof: int) -> int:
         proof = 0
