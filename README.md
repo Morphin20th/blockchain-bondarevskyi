@@ -1,0 +1,1 @@
+# Git repo for DevOps and Blockchain fundamentals disciplines
