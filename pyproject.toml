@@ -11,3 +11,27 @@ dependencies = [
     "ruff>=0.15.5",
     "uvicorn>=0.41.0",
 ]
+
+
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.lint]
+select = [
+    "B", "C", "E", "F", "W",
+    "B9", "ANN", "Q0", "N8"
+]
+ignore = ["N807", "F401", "F405", "ANN204", "ANN401"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/{tests}/*" = ["ANN"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+
+[tool.pyright]
+reportAttributeAccessIssue = "none"
+include = ["src"]
+exclude = ["**/.venv", "**/venv", "**/__pycache__"]
+typeCheckingMode = "basic"
