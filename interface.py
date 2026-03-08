@@ -3,7 +3,9 @@ from abc import ABC, abstractmethod
 
 class BMDBlockchainInterface(ABC):
     @abstractmethod
-    def bmd_new_block(self, proof: int, previous_hash: str | None = None) -> dict:
+    def bmd_new_block(
+        self, proof: int, previous_hash: str | None = None
+    ) -> dict:
         """
         Creating a new block in the blockchain
 
@@ -13,7 +15,9 @@ class BMDBlockchainInterface(ABC):
         """
 
     @abstractmethod
-    def bmd_new_transaction(self, sender: str, recipient: str, amount: int) -> int:
+    def bmd_new_transaction(
+        self, sender: str, recipient: str, amount: int
+    ) -> int:
         """
         Creates a new transaction to go into the next mined block.
 

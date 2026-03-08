@@ -19,7 +19,9 @@ class Blockchain(BMDBlockchainInterface):
         return proof
 
     @staticmethod
-    def bmd_valid_proof(last_proof: int, proof: int, bmd_target: str = "03") -> bool:
+    def bmd_valid_proof(
+        last_proof: int, proof: int, bmd_target: str = "03"
+    ) -> bool:
         guess = f"{last_proof}{proof}".encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash.endswith(bmd_target)
@@ -38,7 +40,9 @@ class Blockchain(BMDBlockchainInterface):
         while len(layer) > 1:
             next_layer = []
             if len(layer) % 2 == 1:
-                layer.append(layer[-1])  # дублюємо останній при непарній кількості
+                layer.append(
+                    layer[-1]
+                )  # дублюємо останній при непарній кількості
             for i in range(0, len(layer), 2):
                 combined = (layer[i] + layer[i + 1]).encode()
                 next_layer.append(hashlib.sha256(combined).hexdigest())
@@ -46,7 +50,9 @@ class Blockchain(BMDBlockchainInterface):
 
         return layer[0]
 
-    def bmd_new_block(self, proof: int, previous_hash: str | None = None) -> dict:
+    def bmd_new_block(
+        self, proof: int, previous_hash: str | None = None
+    ) -> dict:
         merkle_root = self.bmd_merkle_root(self.bmd_current_transactions)
 
         block = {
@@ -55,14 +61,17 @@ class Blockchain(BMDBlockchainInterface):
             "transactions": self.bmd_current_transactions,
             "merkle_root": merkle_root,
             "proof": proof,
-            "previous_hash": previous_hash or self.bmd_hash(self.bmd_chain[-1]),
+            "previous_hash": previous_hash
+            or self.bmd_hash(self.bmd_chain[-1]),
         }
 
         self.bmd_current_transactions = []
         self.bmd_chain.append(block)
         return block
 
-    def bmd_new_transaction(self, sender: str, recipient: str, amount: int) -> int:
+    def bmd_new_transaction(
+        self, sender: str, recipient: str, amount: int
+    ) -> int:
         self.bmd_current_transactions.append(
             {
                 "sender": sender,

@@ -38,7 +38,9 @@ if __name__ == "__main__":
     print(f"Знайдено proof: {new_proof}")
 
     # Перевірка знайденого proof
-    check_hash = hashlib.sha256(f"{last_proof}{new_proof}".encode()).hexdigest()
+    check_hash = hashlib.sha256(
+        f"{last_proof}{new_proof}".encode()
+    ).hexdigest()
     print(f"Хеш(pp'): {check_hash}")
     print(f"Закінчується на '03': {check_hash.endswith('03')}")
 
@@ -55,7 +57,9 @@ if __name__ == "__main__":
     last_proof = bmd_blockchain.bmd_last_block["proof"]
     new_proof = bmd_blockchain.bmd_proof_of_work(last_proof)
     block3 = bmd_blockchain.bmd_new_block(proof=new_proof)
-    check_hash = hashlib.sha256(f"{last_proof}{new_proof}".encode()).hexdigest()
+    check_hash = hashlib.sha256(
+        f"{last_proof}{new_proof}".encode()
+    ).hexdigest()
     print(f"Знайдено proof: {new_proof}")
     print(f"Хеш(pp'): {check_hash}")
     print(f"Закінчується на '03': {check_hash.endswith('03')}")
