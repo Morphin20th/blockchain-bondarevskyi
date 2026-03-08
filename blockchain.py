@@ -24,12 +24,36 @@ class Blockchain(BMDBlockchainInterface):
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash.endswith(bmd_target)
 
+    @staticmethod
+    def bmd_merkle_root(transactions: list) -> str:
+        if not transactions:
+            return "0" * 64
+
+        def bmd_hash_tx(tx: dict) -> str:
+            tx_string = json.dumps(tx, sort_keys=True).encode()
+            return hashlib.sha256(tx_string).hexdigest()
+
+        layer = [bmd_hash_tx(tx) for tx in transactions]
+
+        while len(layer) > 1:
+            next_layer = []
+            if len(layer) % 2 == 1:
+                layer.append(layer[-1])  # дублюємо останній при непарній кількості
+            for i in range(0, len(layer), 2):
+                combined = (layer[i] + layer[i + 1]).encode()
+                next_layer.append(hashlib.sha256(combined).hexdigest())
+            layer = next_layer
+
+        return layer[0]
 
     def bmd_new_block(self, proof: int, previous_hash: str | None = None) -> dict:
+        merkle_root = self.bmd_merkle_root(self.bmd_current_transactions)
+
         block = {
             "index": len(self.bmd_chain) + 1,
             "timestamp": time(),
             "transactions": self.bmd_current_transactions,
+            "merkle_root": merkle_root,
             "proof": proof,
             "previous_hash": previous_hash or self.bmd_hash(self.bmd_chain[-1]),
         }

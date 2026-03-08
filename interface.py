@@ -63,3 +63,18 @@ class BMDBlockchainInterface(ABC):
         :param bmd_target: Target string (e.g., birth month) to find at the end of the hash.
         :return: True if correct, False if not.
         """
+
+    @staticmethod
+    @abstractmethod
+    def bmd_merkle_root(transactions: list) -> str:
+        """
+        Builds a Merkle tree from transactions and returns the root hash.
+
+        Merkle tree — Binary Tree of hashes:
+        - Leaves: SHA-256 of each transaction
+        - Nodes: SHA-256 concatenation of two child hashes
+        - Root: a single hash representing all transactions
+
+        :param transactions: List of transaction dicts.
+        :return: Merkle root as hex string, or '0'*64 if no transactions.
+        """
