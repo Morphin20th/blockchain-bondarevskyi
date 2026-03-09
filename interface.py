@@ -50,7 +50,8 @@ class BMDBlockchainInterface(ABC):
     def bmd_proof_of_work(self, last_proof: int) -> int:
         """
         Simple Proof of Work Algorithm.
-        Find a number p' such that hash(pp') contains specific trailing criteria.
+        Find a number p' such that hash(pp') contains specific trailing
+        criteria
 
         :param last_proof: The proof of the previous block.
         :return: The found proof.
@@ -60,11 +61,13 @@ class BMDBlockchainInterface(ABC):
     @abstractmethod
     def bmd_valid_proof(last_proof: int, proof: int, bmd_target: str) -> bool:
         """
-        Validates the proof: Does hash(last_proof, proof) contain the target criteria?
+        Validates the proof: Does hash(last_proof, proof)
+        contain the target criteria?
 
         :param last_proof: Previous proof.
         :param proof: Current proof.
-        :param bmd_target: Target string (e.g., birth month) to find at the end of the hash.
+        :param bmd_target: Target string (e.g., birth month)
+                            to find at the end of the hash.
         :return: True if correct, False if not.
         """
 

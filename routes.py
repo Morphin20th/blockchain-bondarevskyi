@@ -16,7 +16,7 @@ router = APIRouter()
     status_code=201,
     description="Create a new transaction",
 )
-def bmd_new_transaction(tx: BMDTransactionRequest):
+def bmd_new_transaction(tx: BMDTransactionRequest) -> dict:
     index = bmd_blockchain.bmd_new_transaction(
         sender=tx.sender,
         recipient=tx.recipient,
@@ -28,7 +28,7 @@ def bmd_new_transaction(tx: BMDTransactionRequest):
 @router.get(
     "/mine", description="Performs PoW, hash transactions to Merkle Tree"
 )
-def bmd_mine():
+def bmd_mine() -> dict:
     last_block = bmd_blockchain.bmd_last_block
     last_proof = last_block["proof"]
     # 1. Знаходимо новий proof
@@ -58,7 +58,7 @@ def bmd_mine():
 
 
 @router.get("/chain", description="Get all blockchain")
-def bmd_full_chain():
+def bmd_full_chain() -> dict:
     return {
         "chain": bmd_blockchain.bmd_chain,
         "length": len(bmd_blockchain.bmd_chain),
