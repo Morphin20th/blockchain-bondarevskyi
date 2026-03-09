@@ -10,7 +10,7 @@ class Blockchain(BMDBlockchainInterface):
         self.bmd_current_transactions = []
         self.bmd_chain = []
 
-        self.bmd_new_block(proof=20040203, previous_hash="Bondarevskyi")
+        self.bmd_new_block(proof=20040203, previous_hash="MAIN")
 
     def bmd_proof_of_work(self, last_proof: int) -> int:
         proof = 0
@@ -19,26 +19,59 @@ class Blockchain(BMDBlockchainInterface):
         return proof
 
     @staticmethod
-    def bmd_valid_proof(last_proof: int, proof: int, bmd_target: str = "03") -> bool:
+    def bmd_valid_proof(
+        last_proof: int, proof: int, bmd_target: str = "03"
+    ) -> bool:
         guess = f"{last_proof}{proof}".encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash.endswith(bmd_target)
 
+    @staticmethod
+    def bmd_merkle_root(transactions: list) -> str:
+        if not transactions:
+            return "0" * 64
 
-    def bmd_new_block(self, proof: int, previous_hash: str | None = None) -> dict:
+        def bmd_hash_tx(tx: dict) -> str:
+            tx_string = json.dumps(tx, sort_keys=True).encode()
+            return hashlib.sha256(tx_string).hexdigest()
+
+        layer = [bmd_hash_tx(tx) for tx in transactions]
+
+        while len(layer) > 1:
+            next_layer = []
+            if len(layer) % 2 == 1:
+                layer.append(
+                    layer[-1]
+                )  # дублюємо останній при непарній кількості
+            for i in range(0, len(layer), 2):
+                combined = (layer[i] + layer[i + 1]).encode()
+                next_layer.append(hashlib.sha256(combined).hexdigest())
+            layer = next_layer
+
+        return layer[0]
+
+    def bmd_new_block(
+        self, proof: int, previous_hash: str | None = None
+    ) -> dict:
+        merkle_root = self.bmd_merkle_root(self.bmd_current_transactions)
+
         block = {
             "index": len(self.bmd_chain) + 1,
             "timestamp": time(),
             "transactions": self.bmd_current_transactions,
-            "proof": proof,
-            "previous_hash": previous_hash or self.bmd_hash(self.bmd_chain[-1]),
+            "merkle_root": merkle_root,
+            "proof": proof ,
+            "previous_hash": previous_hash
+            or self.bmd_hash(self.bmd_chain[-1]),
         }
 
         self.bmd_current_transactions = []
         self.bmd_chain.append(block)
         return block
 
-    def bmd_new_transaction(self, sender: str, recipient: str, amount: int) -> int:
+    def bmd_new_transaction(
+        self, sender: str, recipient: str, amount: int
+    ) -> int:
         self.bmd_current_transactions.append(
             {
                 "sender": sender,

@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     # --- Блок генезису ---
     genesis = bmd_blockchain.bmd_last_block
-    print(f"\n[ГЕНЕЗИС-БЛОК]")
+    print("\n[ГЕНЕЗИС-БЛОК]")
     print(f"Індекс: {genesis['index']}")
     print(f"Proof: {genesis['proof']}")
     print(f"Previous hash: {genesis['previous_hash']}")
@@ -32,18 +32,20 @@ if __name__ == "__main__":
     print("\n[МАЙНІНГ БЛОКУ #2]")
     last_proof = bmd_blockchain.bmd_last_block["proof"]
     print(f"Попередній proof: {last_proof}")
-    print(f"Шукаємо новий proof (хеш має закінчуватись на '03')...")
+    print("Шукаємо новий proof (хеш має закінчуватись на '03')...")
 
     new_proof = bmd_blockchain.bmd_proof_of_work(last_proof)
     print(f"Знайдено proof: {new_proof}")
 
     # Перевірка знайденого proof
-    check_hash = hashlib.sha256(f"{last_proof}{new_proof}".encode()).hexdigest()
+    check_hash = hashlib.sha256(
+        f"{last_proof}{new_proof}".encode()
+    ).hexdigest()
     print(f"Хеш(pp'): {check_hash}")
     print(f"Закінчується на '03': {check_hash.endswith('03')}")
 
     block2 = bmd_blockchain.bmd_new_block(proof=new_proof)
-    print(f"\n[БЛОК #2 СТВОРЕНО]")
+    print("\n[БЛОК #2 СТВОРЕНО]")
     print(f"Індекс: {block2['index']}")
     print(f"Proof: {block2['proof']}")
     print(f"Транзакцій: {len(block2['transactions'])}")
@@ -55,7 +57,9 @@ if __name__ == "__main__":
     last_proof = bmd_blockchain.bmd_last_block["proof"]
     new_proof = bmd_blockchain.bmd_proof_of_work(last_proof)
     block3 = bmd_blockchain.bmd_new_block(proof=new_proof)
-    check_hash = hashlib.sha256(f"{last_proof}{new_proof}".encode()).hexdigest()
+    check_hash = hashlib.sha256(
+        f"{last_proof}{new_proof}".encode()
+    ).hexdigest()
     print(f"Знайдено proof: {new_proof}")
     print(f"Хеш(pp'): {check_hash}")
     print(f"Закінчується на '03': {check_hash.endswith('03')}")
@@ -66,7 +70,8 @@ if __name__ == "__main__":
     print(f"Кількість блоків: {len(bmd_blockchain.bmd_chain)}")
     for b in bmd_blockchain.bmd_chain:
         print(
-            f"Блок #{b['index']} | proof={b['proof']} | tx={len(b['transactions'])} | prev={b['previous_hash'][:20]}..."
+            f"Блок #{b['index']} | proof={b['proof']} | "
+            f"tx={len(b['transactions'])} | prev={b['previous_hash'][:20]}..."
         )
 
     print("\n" + "=" * 60)

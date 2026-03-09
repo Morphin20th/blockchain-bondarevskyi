@@ -3,7 +3,9 @@ from abc import ABC, abstractmethod
 
 class BMDBlockchainInterface(ABC):
     @abstractmethod
-    def bmd_new_block(self, proof: int, previous_hash: str | None = None) -> dict:
+    def bmd_new_block(
+        self, proof: int, previous_hash: str | None = None
+    ) -> dict:
         """
         Creating a new block in the blockchain
 
@@ -13,7 +15,9 @@ class BMDBlockchainInterface(ABC):
         """
 
     @abstractmethod
-    def bmd_new_transaction(self, sender: str, recipient: str, amount: int) -> int:
+    def bmd_new_transaction(
+        self, sender: str, recipient: str, amount: int
+    ) -> int:
         """
         Creates a new transaction to go into the next mined block.
 
@@ -46,7 +50,8 @@ class BMDBlockchainInterface(ABC):
     def bmd_proof_of_work(self, last_proof: int) -> int:
         """
         Simple Proof of Work Algorithm.
-        Find a number p' such that hash(pp') contains specific trailing criteria.
+        Find a number p' such that hash(pp') contains specific trailing
+        criteria
 
         :param last_proof: The proof of the previous block.
         :return: The found proof.
@@ -56,10 +61,27 @@ class BMDBlockchainInterface(ABC):
     @abstractmethod
     def bmd_valid_proof(last_proof: int, proof: int, bmd_target: str) -> bool:
         """
-        Validates the proof: Does hash(last_proof, proof) contain the target criteria?
+        Validates the proof: Does hash(last_proof, proof)
+        contain the target criteria?
 
         :param last_proof: Previous proof.
         :param proof: Current proof.
-        :param bmd_target: Target string (e.g., birth month) to find at the end of the hash.
+        :param bmd_target: Target string (e.g., birth month)
+                            to find at the end of the hash.
         :return: True if correct, False if not.
+        """
+
+    @staticmethod
+    @abstractmethod
+    def bmd_merkle_root(transactions: list) -> str:
+        """
+        Builds a Merkle tree from transactions and returns the root hash.
+
+        Merkle tree — Binary Tree of hashes:
+        - Leaves: SHA-256 of each transaction
+        - Nodes: SHA-256 concatenation of two child hashes
+        - Root: a single hash representing all transactions
+
+        :param transactions: List of transaction dicts.
+        :return: Merkle root as hex string, or '0'*64 if no transactions.
         """

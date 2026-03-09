@@ -1,0 +1,30 @@
+name: Blockchain CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+
+jobs:
+  tests-lints-typing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.10.9"
+
+      - name: Install dependencies
+        run: uv sync --locked --all-extras
+
+      - name: Run Linting (Ruff)
+        run: uv run ruff check
+
+      - name: Run Typing check (pyright)
+        run: uv run pyright .
+
+      - name: Run Unit Tests
+        run: uv run -m unittest tests/tests.py
