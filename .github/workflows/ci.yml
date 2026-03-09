@@ -27,4 +27,4 @@ jobs:
         run: uv run pyright .
 
       - name: Run Unit Tests
-        run: uv run unittest tests/tests.py
+        run: uv run -m unittest tests/tests.py
