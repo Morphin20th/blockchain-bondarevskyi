@@ -68,7 +68,7 @@ jobs:
         run: |
           echo "Running post-deploy verification..."
           # Імітація перевірки, що 1=1 
-          python -c "assert 1 == 1"        
+          python -c "assert 1 == 0"        
 
   deploy_production:
     needs: verify_staging
