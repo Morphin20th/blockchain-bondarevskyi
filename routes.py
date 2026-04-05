@@ -66,7 +66,7 @@ def bmd_full_chain() -> dict:
 
 
 @router.post("/nodes/register", status_code=201)
-def bmd_register_nodes(request: BMDNodesRequest):
+def bmd_register_nodes(request: BMDNodesRequest) -> dict:
     if not request.nodes:
         raise HTTPException(
             status_code=400, detail="Please supply a valid list of nodes"
@@ -82,7 +82,7 @@ def bmd_register_nodes(request: BMDNodesRequest):
 
 
 @router.get("/nodes/resolve")
-def bmd_consensus():
+def bmd_consensus() -> dict:
     replaced = bmd_blockchain.bmd_resolve_conflicts()
 
     if replaced:
