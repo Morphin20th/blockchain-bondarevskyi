@@ -97,12 +97,12 @@ class BMDBlockchainInterface(ABC):
     @abstractmethod
     def bmd_valid_chain(self, chain: list) -> bool:
         """
-       Checks the validity of the transmitted chain:
-        - the correctness of the previous_hash of each block
-        - the correctness of the proof of each block
+        Checks the validity of the transmitted chain:
+         - the correctness of the previous_hash of each block
+         - the correctness of the proof of each block
 
-        :param chain: list of the blocks
-        :return: True if valid, else False
+         :param chain: list of the blocks
+         :return: True if valid, else False
         """
 
     @abstractmethod
