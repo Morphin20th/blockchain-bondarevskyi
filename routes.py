@@ -1,9 +1,9 @@
 from uuid import uuid4
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from blockchain import Blockchain
-from schemas import BMDTransactionRequest
+from schemas import BMDTransactionRequest, BMDNodesRequest
 
 bmd_node_identifier = str(uuid4()).replace("-", "")
 
@@ -37,7 +37,7 @@ def bmd_mine() -> dict:
     bmd_blockchain.bmd_new_transaction(
         sender="0",
         recipient=bmd_node_identifier,
-        amount=1,
+        amount=2,
     )
     # 3. Хешуємо транзакції в меркель-дерево
     merkle_root = bmd_blockchain.bmd_merkle_root(
@@ -62,4 +62,35 @@ def bmd_full_chain() -> dict:
     return {
         "chain": bmd_blockchain.bmd_chain,
         "length": len(bmd_blockchain.bmd_chain),
+    }
+
+
+@router.post("/nodes/register", status_code=201)
+def bmd_register_nodes(request: BMDNodesRequest) -> dict:
+    if not request.nodes:
+        raise HTTPException(
+            status_code=400, detail="Please supply a valid list of nodes"
+        )
+
+    for node in request.nodes:
+        bmd_blockchain.bmd_register_node(node)
+
+    return {
+        "message": "New nodes have been added",
+        "total_nodes": list(bmd_blockchain.bmd_nodes),
+    }
+
+
+@router.get("/nodes/resolve")
+def bmd_consensus() -> dict:
+    replaced = bmd_blockchain.bmd_resolve_conflicts()
+
+    if replaced:
+        return {
+            "message": "Our chain was replaced",
+            "new_chain": bmd_blockchain.bmd_chain,
+        }
+    return {
+        "message": "Our chain is authoritative",
+        "chain": bmd_blockchain.bmd_chain,
     }

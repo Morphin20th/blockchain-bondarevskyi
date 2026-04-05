@@ -1,6 +1,9 @@
 import hashlib
 import json
 from time import time
+from urllib.parse import urlparse
+
+import requests
 
 from interface import BMDBlockchainInterface
 
@@ -9,8 +12,56 @@ class Blockchain(BMDBlockchainInterface):
     def __init__(self):
         self.bmd_current_transactions = []
         self.bmd_chain = []
+        self.bmd_nodes = set()
 
-        self.bmd_new_block(proof=20040203, previous_hash="MAIN")
+        self.bmd_new_block(proof=20040203, previous_hash="Bondarevskyi")
+
+    def bmd_register_node(self, address: str) -> None:
+        parsed = urlparse(address)
+        self.bmd_nodes.add(parsed.netloc)
+
+    def bmd_valid_chain(self, chain: list) -> bool:
+        last_block = chain[0]
+        current_index = 1
+
+        while current_index < len(chain):
+            block = chain[current_index]
+
+            if block["previous_hash"] != self.bmd_hash(last_block):
+                return False
+
+            if not self.bmd_valid_proof(last_block["proof"], block["proof"]):
+                return False
+
+            last_block = block
+            current_index += 1
+
+        return True
+
+    def bmd_resolve_conflicts(self) -> bool:
+        neighbours = self.bmd_nodes
+        new_chain = None
+        max_length = len(self.bmd_chain)
+
+        for node in neighbours:
+            try:
+                response = requests.get(f"http://{node}/chain", timeout=5)
+                if response.status_code == 200:
+                    length = response.json()["length"]
+                    chain = response.json()["chain"]
+
+                    # Беремо ланцюг лише якщо він довший і валідний
+                    if length > max_length and self.bmd_valid_chain(chain):
+                        max_length = length
+                        new_chain = chain
+            except requests.exceptions.ConnectionError:
+                continue
+
+        if new_chain:
+            self.bmd_chain = new_chain
+            return True
+
+        return False
 
     def bmd_proof_of_work(self, last_proof: int) -> int:
         proof = 0
@@ -60,7 +111,7 @@ class Blockchain(BMDBlockchainInterface):
             "timestamp": time(),
             "transactions": self.bmd_current_transactions,
             "merkle_root": merkle_root,
-            "proof": proof ,
+            "proof": proof,
             "previous_hash": previous_hash
             or self.bmd_hash(self.bmd_chain[-1]),
         }

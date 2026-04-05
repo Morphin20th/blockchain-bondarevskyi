@@ -7,7 +7,7 @@ on:
 
 
 jobs:
-  tests-lints-typing:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -23,8 +23,64 @@ jobs:
       - name: Run Linting (Ruff)
         run: uv run ruff check
 
-      - name: Run Typing check (pyright)
-        run: uv run pyright .
+      - name: Run Typing check (ty)
+        run: uv run ty check
 
       - name: Run Unit Tests
         run: uv run -m unittest tests/tests.py
+
+  build:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create build artifact
+        run: |
+          echo "Build version: 1.0.${{ github.run_number }}" > build_info.txt
+          echo "Commit: ${{ github.sha }}" >> build_info.txt
+          echo "Timestamp: $(date)" >> build_info.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: blockchain-artifact
+          path: build_info.txt
+
+
+  deploy_staging:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: blockchain-artifact
+
+      - name: Simulate Staging Deploy
+        run: |
+          echo "Deploying to staging environment..."
+          cat build_info.txt
+
+  verify_staging:
+    needs: deploy_staging
+    runs-on: ubuntu-latest
+    steps:
+      - name: Smoke test (Verification)
+        run: |
+          echo "Running post-deploy verification..."
+          # Імітація перевірки, що 1=1 
+          python -c "assert 1 == 1"        
+
+  deploy_production:
+    needs: verify_staging
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: blockchain-artifact
+
+      - name: Final Deploy to Production
+        run: |
+          echo "Deploying to production after manual approval..."
+          cat build_info.txt
