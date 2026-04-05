@@ -111,7 +111,7 @@ class Blockchain(BMDBlockchainInterface):
             "timestamp": time(),
             "transactions": self.bmd_current_transactions,
             "merkle_root": merkle_root,
-            "proof": proof + 1,
+            "proof": proof,
             "previous_hash": previous_hash
             or self.bmd_hash(self.bmd_chain[-1]),
         }
