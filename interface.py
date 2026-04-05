@@ -85,3 +85,31 @@ class BMDBlockchainInterface(ABC):
         :param transactions: List of transaction dicts.
         :return: Merkle root as hex string, or '0'*64 if no transactions.
         """
+
+    @abstractmethod
+    def bmd_register_node(self, address: str) -> None:
+        """
+        Adds a new node to the set of known nodes in the network.
+
+        :param address: URL of node'
+        """
+
+    @abstractmethod
+    def bmd_valid_chain(self, chain: list) -> bool:
+        """
+       Checks the validity of the transmitted chain:
+        - the correctness of the previous_hash of each block
+        - the correctness of the proof of each block
+
+        :param chain: list of the blocks
+        :return: True if valid, else False
+        """
+
+    @abstractmethod
+    def bmd_resolve_conflicts(self) -> bool:
+        """
+        Consensus algorithm: replaces the current chain with the longest
+        valid chain among all known nodes in the network.
+
+        :return: True if the chain has been replaced, False if not
+        """
